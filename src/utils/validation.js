@@ -18,8 +18,34 @@ const validateSignupData = (req) => {
   }
 }; 
 
+const  ValidateProfileData = (req) => {
+  
+  const allowedEditData = ["firstName", "lastName", "emailId", "gender", "age", "about", "skills"];
+
+  // Check if request body exists and has at least one key
+  if (!req.body || Object.keys(req.body).length === 0) {
+    return false;
+  }
+
+  // Check if all provided fields are in the allowed list
+  return Object.keys(req.body).every((field) => allowedEditData.includes(field));
+};
+
+
+
+// const ValidateProfileData = (req) => {
+   
+//   const allowedEditData = ["firstName" , "lastName" , "emailId" , "gender" , "age","about" , "skills"];
+
+//   const isEditAllowed = Object.keys(req.body).every((field) => allowedEditData.includes(field));
+
+//   return isEditAllowed;
+
+// }
+
 
 
 module.exports = {
  validateSignupData,
+ ValidateProfileData,
 };

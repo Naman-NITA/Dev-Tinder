@@ -37,7 +37,7 @@ const requestRouter = require("./routes/requests");
 
    app.use("/" , requestRouter);
 
-   
+    
 
 
 
@@ -57,8 +57,8 @@ connectDB()
  .then(() => {
   console.log("Database connection established....");
 
-  app.listen(4000 , () => {
-    console.log("Server is running in port 4000...");
+  app.listen(3000 , () => {
+    console.log("Server is running in port 3000...");
    });
 
  })

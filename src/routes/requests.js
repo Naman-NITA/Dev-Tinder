@@ -2,7 +2,7 @@ const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const requestRouter = express.Router();
 const ConnectionRequest = require("../models/connectionRequest");
-const user = require("../models/user");
+const User = require("../models/user");
 
 requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
   try {
@@ -18,14 +18,14 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
     }
 
 
-    // const toUser = await user.findById(toUserId);
+    const toUser = await User.findById(toUserId);
 
-    // if(!toUser){
-    //   return res.status(404).json({message : "User not found",});
-    // }
+    if(!toUser){
+      return res.status(404).json({message : "User not found",});
+    }
 
 
-     // if there is an existing Connection Request
+    //  if there is an existing Connection Request
 
      const existingConnectionRequest = await ConnectionRequest.findOne({
       $or : [
@@ -38,6 +38,8 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
      if(existingConnectionRequest){
       return res.status(400).send({meassage : "Connection Request Already Exist !"});
      } 
+
+     
 
 
     

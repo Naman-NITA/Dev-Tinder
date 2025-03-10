@@ -24,7 +24,7 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
       return res.status(404).json({message : "User not found",});
     }
 
-
+    // 6777f407f4b0c00100cf44a3
     //  if there is an existing Connection Request
 
      const existingConnectionRequest = await ConnectionRequest.findOne({
@@ -58,9 +58,16 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
     });
 
   } catch (error) {
-    console.error(error);
+    // console.error(error);
+
+    // Handle self-request error explicitly
+    if (error.message === "Cannot send connection request to yourself!") {
+      return res.status(400).json({ message: error.message });
+    }
+
     res.status(500).send(req.user?.firstName + " couldn't send the connection request!");
   }
 });
+
 
 module.exports = requestRouter;

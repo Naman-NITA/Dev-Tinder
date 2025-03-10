@@ -31,20 +31,40 @@ const connectionRequestSchema = new mongoose.Schema({
 
 //   // Check if the fromUserId is the same as toUserId
 //   if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
-//     return next(new Error("Cannot send connection request to yourself!"));
+//     throw new Error("Cannot send connection request to yourself!");
 //   }
 
+//   next();
+ 
   
 // });
 
 
 
-const ConnectionRequestModel = mongoose.model(
+connectionRequestSchema.index({fromUserId : 1 , toUserId :1});
+
+
+connectionRequestSchema.pre("save", function (next) {
+  const connectionRequest = this;
+
+  // Check if the fromUserId is the same as toUserId
+  if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
+    throw new Error("Cannot send connection request to yourself!");
+  }
+
+  next();
+});
+
+
+
+
+
+const ConnectionRequest = mongoose.model(
   "ConnectionRequest",
   connectionRequestSchema
 );
 
-module.exports = ConnectionRequestModel;
+module.exports = ConnectionRequest;
  
-
+ 
     

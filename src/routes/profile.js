@@ -35,7 +35,7 @@ profileRouter.patch("/profile/edit" , userAuth , async(req,res) => {
     
       Object.keys(req.body).forEach((key) => (logedInuser[key] = req.body[key]));
 
-
+  
       await logedInuser.save();
     
 
@@ -51,6 +51,9 @@ profileRouter.patch("/profile/edit" , userAuth , async(req,res) => {
     }
 
 });
+
+ // Forgot password API 
+ 
 
 
 module.exports  = profileRouter

@@ -12,43 +12,42 @@ const User = require("../models/user");
 const bcrypt =  require("bcrypt");
 
 authRouter.post("/signup", async (req, res) => {
-
   try {
+    // Validate data (ensure this function is correctly validating all fields)
+    validateSignupData(req);
 
-  // validation of data is required
-  validateSignupData(req);
+    // Extract all fields from the request body
+    const { firstName, lastName, emailId, password, age, gender, photoUrl, about, skills } = req.body;
 
-  // Encrypt the password
- 
+    // Encrypt the password
+    const passwordHash = await bcrypt.hash(password, 10);
 
-  const { firstName , lastName , emailId , password } = req.body;
+    // Create a new user instance with all fields
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: passwordHash,
+      age,  // Include age
+      gender,  // Include gender
+      photoUrl,  // Include photoUrl
+      about,  // Include about
+      skills,  // Include skills
+    });
 
-  const passwordHash = await bcrypt.hash(password,10);
-
-  console.log(passwordHash);
-
-
-  
-
-     
- // creating a new instance of the user model
-  const user = new User({
-    firstName,
-    lastName,
-    emailId,
-    password: passwordHash,
-  });
- 
+    // Save the user in the database
     await user.save();
+    
     res.status(201).send("User added successfully");
   } catch (error) {
     if (error.code === 11000) {
       res.status(400).send("Email ID already exists");
     } else {
-      res.status(400).send("ERROR : " + error.message);
+      res.status(400).send("ERROR: " + error.message);
     }
   }
-}); 
+});
+
 
 authRouter.post("/login", async (req, res) => {
   try {

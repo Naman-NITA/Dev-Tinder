@@ -30,6 +30,7 @@ app.use(cookieParser());
 const profileRouter = require("./routes/profile");
 
 const requestRouter = require("./routes/requests");
+const userRouter = require("./routes/user");
 
 
    app.use("/" , authRouter);
@@ -38,6 +39,9 @@ const requestRouter = require("./routes/requests");
 
 
    app.use("/" , requestRouter);
+
+
+   app.use("/" , userRouter);
 
      
 

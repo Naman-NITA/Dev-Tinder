@@ -30,88 +30,35 @@ userRouter.get("/user/requests/received", userAuth, async (req, res) => {
 }); 
 
 
-userRouter.get("/user/connection" , userAuth , async (req,res) => {
-   
-   try {
-
+userRouter.get("/user/connection", userAuth, async (req, res) => {
+  try {
     const loggedInUser = req.user;
-
-    // rahul => smita =>accepted
-    //smita => naman => accepted   
-
-    // total connection smita have
-
 
     const connectionRequest = await ConnectionRequest.find({
       $or: [
-        {toUserId : loggedInUser._id,status : "accepted"},
-        {fromUserId : loggedInUser._id, status : "accepted"},
-      ]
-    }).populate("fromUserId" , ["firstName" , "lastName" , "photoUrl" ,"age" , "gender" , "about" , "skills"]).populate("fromUserId" , ["firstName" , "lastName" , "photoUrl" ,"age" , "gender" , "about" , "skills"]);
-
+        { toUserId: loggedInUser._id, status: "accepted" },
+        { fromUserId: loggedInUser._id, status: "accepted" },
+      ],
+    })
+      .populate("fromUserId", ["firstName", "lastName", "photoUrl", "age", "gender", "about", "skills"])
+      .populate("toUserId", ["firstName", "lastName", "photoUrl", "age", "gender", "about", "skills"]);
 
     const data = connectionRequest.map((row) => {
-       
-       if(row.fromUserId._id.toString() === loggedInUser._id.toString()){
+      if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
         return row.toUserId;
-       }
-       return row.fromUserId;
-    })  
-
-       
-     res.json({data});
-
-
-    
-   } catch (error) {
-
-    res.status(400).send({message : error.message});
-    
-   }
-
-})
-
-userRouter.get("/user/connection" , userAuth , async (req,res) => {
-   
-  try {
-
-   const loggedInUser = req.user;
-
-   // rahul => smita =>accepted
-   //smita => naman => accepted   
-
-   // total connection smita have
-
-
-   const connectionRequest = await ConnectionRequest.find({
-     $or: [
-       {toUserId : loggedInUser._id,status : "accepted"},
-       {fromUserId : loggedInUser._id, status : "accepted"},
-     ]
-   }).populate("fromUserId" , ["firstName" , "lastName" , "photoUrl" ,"age" , "gender" , "about" , "skills"]).populate("fromUserId" , ["firstName" , "lastName" , "photoUrl" ,"age" , "gender" , "about" , "skills"]);
-
-
-   const data = connectionRequest.map((row) => {
-      
-      if(row.fromUserId._id.toString() === loggedInUser._id.toString()){
-       return row.toUserId;
       }
       return row.fromUserId;
-   })  
+    });
 
-      
-    res.json({data});
+    res.json({ data });
 
-   
-
-   
   } catch (error) {
-
-   res.status(400).send({message : error.message});
-   
+    res.status(400).send({ message: error.message });
   }
+});
 
-})
+
+
 
 
 userRouter.get("/feed", userAuth, async (req, res) => {

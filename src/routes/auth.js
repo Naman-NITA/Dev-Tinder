@@ -3,7 +3,7 @@ const express = require("express");
 
 const authRouter = express.Router();
 
-const { validateSignupData } = require("../utils/validation");
+const { validateSignUpData } = require("../utils/validation");
 
  
 
@@ -14,7 +14,7 @@ const bcrypt =  require("bcrypt");
 authRouter.post("/signup", async (req, res) => {
   try {
     // Validate data (ensure this function is correctly validating all fields)
-    validateSignupData(req);
+    validateSignUpData(req);
 
     // Extract all fields from the request body
     const { firstName, lastName, emailId, password, age, gender, photoUrl, about, skills } = req.body;
@@ -36,9 +36,14 @@ authRouter.post("/signup", async (req, res) => {
     });
 
     // Save the user in the database
-    await user.save();
-    
-    res.status(201).send("User added successfully");
+    const savedUser = await user.save();
+    const token = await savedUser.getJWT();
+
+    res.cookie("token", token, {
+      expires: new Date(Date.now() + 8 * 3600000),
+    });
+
+    res.json({ message: "User Added successfully!", data: savedUser });
   } catch (error) {
     if (error.code === 11000) {
       res.status(400).send("Email ID already exists");
@@ -87,6 +92,8 @@ authRouter.post("/login", async (req, res) => {
     res.status(400).send("ERROR: " + error.message);
   }
 });
+
+
 
  authRouter.post("/logout" , async(req,res) => {
 

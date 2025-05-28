@@ -52,9 +52,9 @@ const userRouter = require("./routes/user");
 connectDB()
  .then(() => {
   console.log("Database connection established....");
-
-  app.listen(3000 , () => {
-    console.log("Server is running in port 3000...");
+  
+  app.listen(3001 , () => {
+    console.log("Server is running in port 3001 :" );
    });
  
  })

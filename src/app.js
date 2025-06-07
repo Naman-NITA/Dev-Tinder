@@ -65,8 +65,9 @@ connectDB()
   app.listen(3001 , () => {
     console.log("Server is running in port 3001 :" );
    });
- 
  })
+ 
+
  .catch((err) => {
   console.log("Database cannot be connected!!");
  });

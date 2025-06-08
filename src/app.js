@@ -67,15 +67,17 @@ connectDB()
    });
  })
 
+ 
 
 
 
  .catch((err) => {
   console.log("Database cannot be connected!!");
- });
+  console.error("Error details:", err);
+});
 
 
- 
+
 
  
 

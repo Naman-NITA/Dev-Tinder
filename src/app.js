@@ -1,90 +1,43 @@
-
-
 const express = require("express");
-
 const connectDB = require("./config/database"); 
-
-const app = express();
-
-
-
-
-
-
-
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
-const cors = require('cors');
-
-
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-  ],
-  credentials: true,
-}));
-
-app.use(express.json());
-
-app.use(cookieParser()); 
-
-
-
-
-
-
- const authRouter = require("./routes/auth");
-
- const request = require("./routes/requests");
-
- const profile = require("./routes/profile");
-
+const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
-
 const requestRouter = require("./routes/requests");
 const userRouter = require("./routes/user");
 const paymentRouter = require("./routes/payment");
 
+const app = express();
 
-   app.use("/" , authRouter);
- 
-   app.use("/" , profileRouter);
+// Use .env variable or fallback to 3001
+const PORT = process.env.PORT || 3001;
 
+app.use(cors({
+  origin: ["http://localhost:5173"],
+  credentials: true,
+}));
 
-   app.use("/" , requestRouter);
+app.use(express.json());
+app.use(cookieParser());
 
+// Mount routers
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", requestRouter);
+app.use("/", userRouter);
+app.use("/", paymentRouter);
 
-   app.use("/" , userRouter);
-
-   app.use("/",paymentRouter);
-   
+// Connect DB and start server
 connectDB()
- .then(() => {
-  console.log("Database connection established....");
-  
-
-  app.listen(3001, () => {
-    console.log("Server is running in port 3001 :" );
-   });
- })
-
-
- 
-
-
-
- .catch((err) => {
-  console.log("Database cannot be connected!!");
-  console.error("Error details:", err);
-});
-
-
-
-
- 
-
-
-
-
-
- 
+  .then(() => {
+    console.log("Database connection established....");
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log("Database cannot be connected!!");
+    console.error("Error details:", err);
+  });

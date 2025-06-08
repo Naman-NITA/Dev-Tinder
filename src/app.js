@@ -12,7 +12,7 @@ const paymentRouter = require("./routes/payment");
 const app = express();
 
 // Use .env variable or fallback to 3001
-const PORT = process.env.PORT || 3010;
+const PORT = process.env.PORT || 3001;
 
 app.use(cors({
   origin: ["http://localhost:5173"],

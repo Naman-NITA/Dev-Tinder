@@ -62,11 +62,12 @@ connectDB()
  .then(() => {
   console.log("Database connection established....");
   
-  app.listen(3001, () => {
+  
+  app.listen(7777, () => {
     console.log("Server is running in port 3001 :" );
    });
  })
- 
+
 
  
 

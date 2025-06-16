@@ -13,9 +13,15 @@
  const connectDB = async () => {
      
   await mongoose.connect(
-    "mongodb+srv://Naman123123:Naman123123@cluster0.htf5yjj.mongodb.net/DevDin" 
+    "mongodb+srv://namank89123:v3gZaTt5BO2mJDxk@cluster0.kmg6hgs.mongodb.net/Dev" 
   );
  }; 
+
+
+ 
+
+
+  
  
 
 

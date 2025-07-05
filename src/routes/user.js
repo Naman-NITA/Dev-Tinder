@@ -6,6 +6,8 @@ const User = require("../models/user");
 
 const userRouter = express.Router();
 
+
+
 const USER_SAFE_DATA = ["firstName", "lastName", "photoUrl", "age", "gender", "about", "skills"];
 
 

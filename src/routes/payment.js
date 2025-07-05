@@ -48,7 +48,7 @@ paymentRouter.post("/payment/create" ,userAuth , async(req,res) => {
     const savedPayment = await payment.save();
 
     // // Return back my order details to frontend
-    res.json({ ...savedPayment.toJSON(), keyId: "rzp_test_WxrIhqSQFhUHs2" });
+    res.json({ ...savedPayment.toJSON(), keyId: "rzp_test_xmgnk9VG3mQxVU" });
       
 
        

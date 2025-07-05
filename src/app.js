@@ -16,7 +16,7 @@ const PORT =  3001;
 
 app.use(cors({
   origin: [
-    "http://localhost:5173"
+    "https://tinder-front-3zqs.vercel.app"
   ],
   credentials: true,
 }));

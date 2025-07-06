@@ -10,6 +10,7 @@ const user = require("../models/user");
 
 
 
+
 const paymentRouter = express.Router();
 
 paymentRouter.post("/payment/create" ,userAuth , async(req,res) => {
@@ -65,63 +66,45 @@ paymentRouter.post("/payment/create" ,userAuth , async(req,res) => {
 });
 
 
-paymentRouter.post("/payment/webhook", async (req, res) => {
-  try {
-    console.log("Webhook Called");
-    const webhookSignature = req.get("X-Razorpay-Signature");
-    console.log("Webhook Signature", webhookSignature);
+// Add this route BEFORE any express.json() middleware is applied
+paymentRouter.post(
+  "/payment/webhook",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    try {
+      const webhookSignature = req.get("X-Razorpay-Signature");
 
-    const isWebhookValid = validateWebhookSignature(
-      JSON.stringify(req.body),
-      webhookSignature,
-      "Naman@#8989"
-    );
+      const isWebhookValid = validateWebhookSignature(
+        req.body, // no need to stringify, it's already raw
+        webhookSignature,
+        "Naman@#8989"
+      );
 
-    if (!isWebhookValid) {
-      console.log("INvalid Webhook Signature");
-      return res.status(400).json({ msg: "Webhook signature is invalid" });
+      if (!isWebhookValid) {
+        return res.status(400).json({ msg: "Invalid webhook signature" });
+      }
+
+      const paymentDetails = JSON.parse(req.body).payload.payment.entity;
+
+      const payment = await Payment.findOne({ orderId: paymentDetails.order_id });
+
+      if (payment) {
+        payment.status = paymentDetails.status;
+        await payment.save();
+
+        const updatedUser = await user.findById(payment.userId);
+        updatedUser.isPremium = true;
+        updatedUser.membershipType = payment.notes.membershipType;
+        await updatedUser.save();
+      }
+
+      return res.status(200).json({ msg: "Webhook processed" });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
     }
-     
-    console.log("Valid Webhook Signature");
-
-   
-
-
-
-    // Udpate my payment Status in DB
-
-    const paymentDetails = req.body.payload.payment.entity;
-
-     const payment = await Payment.findOne({ orderId: paymentDetails.order_id });
-
-    payment.status = paymentDetails.status;
-    await payment.save();
-    console.log("Payment saved");
-
-    const User = await user.findOne({ _id: payment.userId });
-    user.isPremium = true;
-    user.membershipType = payment.notes.membershipType;
-
-    console.log("User saved");
-
-
-    await User.save();
-
-    // if(req.body.event == "payment.captured"){
-
-    // }
-
-    // if(req.body.event == "payment.failed"){
-      
-      
-    // }
-    
-
-    return res.status(200).json({ msg: "Webhook received successfully" });
-  } catch (err) {
-    return res.status(500).json({ msg: err.message });
   }
-});
+);
+
 
 
 

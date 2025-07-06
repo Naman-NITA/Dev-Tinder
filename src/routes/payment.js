@@ -66,40 +66,49 @@ paymentRouter.post("/payment/create" ,userAuth , async(req,res) => {
 });
 
 
-// Add this route BEFORE any express.json() middleware is applied
 paymentRouter.post(
-  "/payment/webhook",
-  express.raw({ type: "application/json" }),
-  async (req, res) => {
+  "/payment/webhook", async (req, res) => {
     try {
+      console.log("📩 Webhook Called");
+
       const webhookSignature = req.get("X-Razorpay-Signature");
+      console.log("🔐 Webhook Signature:", webhookSignature);
 
       const isWebhookValid = validateWebhookSignature(
-        req.body, // no need to stringify, it's already raw
+        req.body, // raw buffer
         webhookSignature,
         "Naman@#797999"
       );
 
       if (!isWebhookValid) {
-        return res.status(400).json({ msg: "Invalid webhook signature" });
+        console.log("❌ Invalid Webhook Signature");
+        return res.status(400).json({ msg: "Webhook signature is invalid" });
       }
 
-      const paymentDetails = JSON.parse(req.body).payload.payment.entity;
+      const parsedBody = JSON.parse(req.body);
+      const paymentDetails = parsedBody.payload.payment.entity;
+
+      console.log("💳 Payment Details:", paymentDetails);
 
       const payment = await Payment.findOne({ orderId: paymentDetails.order_id });
 
       if (payment) {
         payment.status = paymentDetails.status;
         await payment.save();
+        console.log("💾 Payment updated");
 
-        const updatedUser = await user.findById(payment.userId);
-        updatedUser.isPremium = true;
-        updatedUser.membershipType = payment.notes.membershipType;
-        await updatedUser.save();
+        const User = await user.findById(payment.userId);
+        if (User) {
+          User.isPremium = true;
+          User.membershipType = payment.notes.membershipType;
+          await User.save();
+          console.log("👤 User updated");
+        }
       }
 
       return res.status(200).json({ msg: "Webhook processed" });
     } catch (err) {
+      console.error("🔥 Error:", err.message);
       return res.status(500).json({ msg: err.message });
     }
   }

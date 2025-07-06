@@ -1,5 +1,5 @@
 const express = require("express");
-const connectDB = require("./config/database"); 
+const connectDB = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
@@ -7,32 +7,35 @@ const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/requests");
 const userRouter = require("./routes/user");
-const paymentRouter = require("./routes/payment");
+
+// 🔥 Import payment routers separately
+const { routerForWebhook, routerForOthers } = require("./routes/payment");
 
 const app = express();
+const PORT = 3001;
 
-// Use .env variable or fallback to 3001
-const PORT =  3001;
-
+// ✅ CORS Setup
 app.use(cors({
-  origin: [
-    "https://tinder-front-3zqs.vercel.app"
-  ],
+  origin: ["https://tinder-front-3zqs.vercel.app"],
   credentials: true,
 }));
 
+// ✅ Razorpay Webhook route comes BEFORE express.json
+// This is CRITICAL
+app.use("/payment/webhook", routerForWebhook); // handles express.raw
 
+// ✅ Then apply express.json to all others
 app.use(express.json());
 app.use(cookieParser());
 
-// Mount routers
+// ✅ Mount all other routes
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
-app.use("/", paymentRouter);
+app.use("/", routerForOthers); // includes /payment/create etc.
 
-// Connect DB and start server
+// ✅ Connect DB and Start Server
 connectDB()
   .then(() => {
     console.log("Database connection established....");

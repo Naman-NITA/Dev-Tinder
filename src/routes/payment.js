@@ -87,6 +87,15 @@ routerForWebhook.post("/", express.raw({ type: "application/json" }), async (req
   }
 });
 
+routerForOthers.get("/premium/verify", userAuth, async (req, res) => {
+  const user = req.user.toJSON();
+  console.log(user);
+  if (user.isPremium) {
+    return res.json({ ...user });
+  }
+  return res.json({ ...user });
+});
+
 module.exports = {
   routerForWebhook,
   routerForOthers,

@@ -18,11 +18,11 @@ const initializeSocket = require("./utils/socket");
 const app = express();
 const PORT = 3001;
 
-// ✅ CORS Setup
 app.use(cors({
-  origin: ["http://localhost:5173"],
+  origin: "https://tinder-front-3zqs.vercel.app",
   credentials: true,
 }));
+
 
 // ✅ Razorpay Webhook route comes BEFORE express.json
 // This is CRITICAL

@@ -7,24 +7,28 @@ const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/requests");
 const userRouter = require("./routes/user");
+const chatRouter = require("./routes/chat"); 
 
-// 🔥 Import payment routers separately
+
+const http = require("http");
+
 const { routerForWebhook, routerForOthers } = require("./routes/payment");
+const initializeSocket = require("./utils/socket");
 
 const app = express();
 const PORT = 3001;
 
 // ✅ CORS Setup
 app.use(cors({
-  origin: ["https://tinder-front-3zqs.vercel.app"],
+  origin: ["http://localhost:5173"],
   credentials: true,
 }));
 
 // ✅ Razorpay Webhook route comes BEFORE express.json
 // This is CRITICAL
-app.use("/payment/webhook", routerForWebhook); // handles express.raw
+app.use("/payment/webhook", routerForWebhook);  
 
-// ✅ Then apply express.json to all others
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -33,13 +37,18 @@ app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
-app.use("/", routerForOthers); // includes /payment/create etc.
+app.use("/", routerForOthers); 
+app.use("/", chatRouter);
+
+
+const server = http.createServer(app);
+initializeSocket(server); 
 
 // ✅ Connect DB and Start Server
 connectDB()
   .then(() => {
     console.log("Database connection established....");
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
   })
